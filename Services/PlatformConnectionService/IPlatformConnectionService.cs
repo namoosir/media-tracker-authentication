@@ -12,5 +12,7 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
         Task<ServiceResponse<GetPlatformConnectionDto>> UpdatePlatformConnection(
             UpdatePlatformConnectionDto updatedPlatformConnection
         );
+        ServiceResponse<string> GetYoutube();
+        Task<ServiceResponse<string>> GetRedirectYoutube(string code, string error);
     }
 }

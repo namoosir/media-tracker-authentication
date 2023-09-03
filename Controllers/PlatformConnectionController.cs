@@ -2,6 +2,7 @@ using MediaTrackerAuthenticationService.Dtos.PlatformConnection;
 using MediaTrackerAuthenticationService.Models;
 using MediaTrackerAuthenticationService.Services.PlatformConnectionService;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Http;
 
 namespace MediaTrackerAuthenticationService.Controllers;
 
@@ -52,9 +53,23 @@ public class PlatformConnectionController : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet("youtube")]
+    [HttpGet("request/youtube")]
     public RedirectResult GetYoutube()
     {
-        return Redirect("https://www.youtube.com/");
+        var response = _platformConnectionService.GetYoutube();
+        return Redirect(response.Data);
+    }
+
+    [HttpGet("redirect/youtube")]
+    public async Task<RedirectResult> GetRedirectYoutube([FromQuery] IDictionary<string, string> queryParameters)
+    {        
+        string? code = queryParameters.TryGetValue("code", out string result) ? result : (string?)null;
+        string? error = queryParameters.TryGetValue("error", out string result2) ? result2 : (string?)null;
+
+        var response = await _platformConnectionService.GetRedirectYoutube(code, error);
+
+        Console.WriteLine(response.Message);
+
+        return Redirect(response.Data);
     }
 }

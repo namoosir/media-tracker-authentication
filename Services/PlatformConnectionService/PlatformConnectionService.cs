@@ -2,6 +2,7 @@ using AutoMapper;
 using MediaTrackerAuthenticationService.Dtos.PlatformConnection;
 using MediaTrackerAuthenticationService.Models;
 using Microsoft.EntityFrameworkCore;
+using MediaTrackerAuthenticationService.utils;
 
 namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
 {
@@ -9,11 +10,15 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
     {
         private readonly IMapper _mapper;
         private readonly AppDbContext _context;
+        private readonly HttpClient _httpClient;
+        private readonly IConfiguration _configuration;
 
-        public PlatformConnectionService(IMapper mapper, AppDbContext context)
+        public PlatformConnectionService(IMapper mapper, AppDbContext context, HttpClient httpClient, IConfiguration configuration)
         {
             _mapper = mapper;
             _context = context;
+            _httpClient = httpClient;
+            _configuration = configuration;
         }
 
         public async Task<ServiceResponse<GetPlatformConnectionDto>> AddPlatformConnection(
@@ -99,5 +104,82 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
             }
             return serviceResponse;
         }
+
+        public ServiceResponse<string> GetYoutube()
+        {
+            var serviceResponse = new ServiceResponse<string>();
+            var url = new RedirectAuth(_configuration).CreateUrl("https://www.googleapis.com/auth/youtube.readonly");
+            
+            serviceResponse.Data = url;
+            return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<string>> GetRedirectYoutube(string code, string error)
+        {
+            var serviceResponse = new ServiceResponse<string>();
+
+            try 
+            {
+                if (string.IsNullOrEmpty(code))
+                {
+                    //figure out some way to do error state
+                    Console.WriteLine("ISSUES" + error);
+                    
+                    serviceResponse.Data = "https://google.com" + "?error=" + error;
+
+                    throw new Exception(error);
+                }
+
+                Console.WriteLine($"Authorization Code: {code}");
+
+                TokenRequestParameters requestParams = new TokenRequestParameters(_configuration, code);
+
+                var dict = requestParams.parametersToDictionary();
+                var content = new FormUrlEncodedContent(dict);
+                
+                var response = await _httpClient.PostAsync(requestParams.tokenEndpoint, content);
+
+                Console.WriteLine("HTTP Response:");
+                Console.WriteLine($"Status Code: {response.StatusCode}");
+                Console.WriteLine($"Headers: {response.Headers}");
+                Console.WriteLine($"Content: {await response.Content.ReadAsStringAsync()}");
+
+                if (response.IsSuccessStatusCode){
+                    // Parse the JSON response to obtain the tokens
+                    // var tokenResponse = await response.Content.ReadAsAsync<TokenResponse>();
+
+                    //             // Log the token response to the console
+                    // Console.WriteLine("Token Response:");
+                    // Console.WriteLine($"Access Token: {tokenResponse.access_token}");
+                    // Console.WriteLine($"Token Type: {tokenResponse.token_type}");
+                    // Console.WriteLine($"Expires In: {tokenResponse.expires_in}");
+                    // Console.WriteLine($"Refresh Token: {tokenResponse.refresh_token}");
+                    // Console.WriteLine($"Scope: {tokenResponse.scope}");
+                    // Console.WriteLine($"ID Token: {tokenResponse.id_token}");
+
+                    // return tokenResponse;
+                }
+                else
+                {
+                    // Handle the error response
+                    // You may want to log the error and take appropriate action
+                    throw new Exception($"Token exchange failed with status code {response.StatusCode}");
+                }
+
+                //everything succeeded at this point so redirect properly
+                serviceResponse.Data = "https://google.com";
+            }
+            catch (Exception e)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = e.Message;
+            }
+
+            // You can also use 'state' for additional validation or context if needed.
+
+            // No content is returned to the client.
+            return serviceResponse;
+        }
+
     }
 }
