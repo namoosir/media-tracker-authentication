@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace MediaTrackerAuthenticationService.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("auth/[controller]")]
 public class WeatherForecastController : ControllerBase
 {
     private static readonly string[] Summaries = new[]
