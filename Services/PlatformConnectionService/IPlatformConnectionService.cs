@@ -5,7 +5,7 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
 {
     public interface IPlatformConnectionService
     {
-        Task<ServiceResponse<GetPlatformConnectionDto>> GetPlatformConnectionByUserId(int UserID);
+        Task<ServiceResponse<GetPlatformConnectionDto>> GetPlatformConnectionByUserId(int userID);
         Task<ServiceResponse<GetPlatformConnectionDto>> AddPlatformConnection(
             AddPlatformConnectionDto newPlatformConnection
         );

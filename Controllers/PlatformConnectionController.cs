@@ -16,10 +16,16 @@ public class PlatformConnectionController : ControllerBase
         _platformConnectionService = platformConnectionService;
     }
 
-    [HttpGet("{UserId}")]
-    public async Task<ActionResult<ServiceResponse<GetPlatformConnectionDto>>> Get(int UserId)
+    [HttpGet("{userId}")]
+    public async Task<ActionResult<ServiceResponse<GetPlatformConnectionDto>>> Get(int userId)
     {
-        return Ok(await _platformConnectionService.GetPlatformConnectionByUserId(UserId));
+        var response = await _platformConnectionService.GetPlatformConnectionByUserId(userId);
+
+        if (response.Data is null)
+        {
+            return NotFound(response);
+        }
+        return Ok(response);
     }
 
     [HttpPost]

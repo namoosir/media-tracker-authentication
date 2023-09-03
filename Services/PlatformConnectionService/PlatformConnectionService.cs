@@ -8,40 +8,60 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
     public class PlatformConnectionService : IPlatformConnectionService
     {
         private readonly IMapper _mapper;
+        private readonly AppDbContext _context;
 
-        public PlatformConnectionService(IMapper mapper)
+        public PlatformConnectionService(IMapper mapper, AppDbContext context)
         {
             _mapper = mapper;
+            _context = context;
         }
-
-        private static PlatformConnection youtube = new PlatformConnection
-        {
-            Platform = MediaPlatform.YouTube,
-            AccessToken = "a",
-            RefreshToken = "b",
-            Scopes = "c"
-        };
 
         public async Task<ServiceResponse<GetPlatformConnectionDto>> AddPlatformConnection(
             AddPlatformConnectionDto newPlatformConnection
         )
         {
             var serviceResponse = new ServiceResponse<GetPlatformConnectionDto>();
-            //MUST DO REVERSE DTO MAPPING BEFORE INSERTING TO DB HERE AND THEN
-            var temp = _mapper.Map<PlatformConnection>(newPlatformConnection);
-            //inserting temp to db here
-            //retrieve the item from db
-            serviceResponse.Data = _mapper.Map<GetPlatformConnectionDto>(temp);
+
+            try
+            {
+                var toInsert = _mapper.Map<PlatformConnection>(newPlatformConnection);
+                _context.PlatformConnections.Add(toInsert);
+                await _context.SaveChangesAsync();
+                serviceResponse.Data = _mapper.Map<GetPlatformConnectionDto>(toInsert);
+            }
+            catch (Exception e)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = e.Message;
+            }
             return serviceResponse;
         }
 
         public async Task<ServiceResponse<GetPlatformConnectionDto>> GetPlatformConnectionByUserId(
-            int UserID
+            int userID
         )
         {
             var serviceResponse = new ServiceResponse<GetPlatformConnectionDto>();
-            //retrieve the item from db based on userid and then return here
-            serviceResponse.Data = _mapper.Map<GetPlatformConnectionDto>(youtube);
+
+            try
+            {
+                var platformConnection = await _context.PlatformConnections.FirstOrDefaultAsync(
+                    platform => platform.UserId == userID
+                );
+
+                if (platformConnection is null)
+                {
+                    throw new Exception($"Platform Connection with User Id '{userID}' not found");
+                }
+
+                serviceResponse.Data = _mapper.Map<GetPlatformConnectionDto>(platformConnection);
+            }
+            catch (Exception e)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = e.Message;
+            }
+
             return serviceResponse;
         }
 
@@ -53,10 +73,24 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
 
             try
             {
-                //do more errorchecking
-                //do some updating
-                //retrieve updated item from db
-                serviceResponse.Data = _mapper.Map<GetPlatformConnectionDto>(youtube);
+                var platformConnection = await _context.PlatformConnections.FirstOrDefaultAsync(
+                    platform => platform.UserId == updatedPlatformConnection.UserId
+                );
+
+                if (platformConnection is null)
+                {
+                    throw new Exception(
+                        $"Platform Connection with User Id '{updatedPlatformConnection.UserId}' not found"
+                    );
+                }
+
+                platformConnection.AccessToken = updatedPlatformConnection.AccessToken;
+                platformConnection.Platform = updatedPlatformConnection.Platform;
+                platformConnection.RefreshToken = updatedPlatformConnection.RefreshToken;
+                platformConnection.Scopes = updatedPlatformConnection.Scopes;
+
+                await _context.SaveChangesAsync();
+                serviceResponse.Data = _mapper.Map<GetPlatformConnectionDto>(platformConnection);
             }
             catch (Exception e)
             {
