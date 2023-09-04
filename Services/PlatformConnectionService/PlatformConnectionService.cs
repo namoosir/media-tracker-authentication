@@ -3,6 +3,8 @@ using MediaTrackerAuthenticationService.Dtos.PlatformConnection;
 using MediaTrackerAuthenticationService.Models;
 using Microsoft.EntityFrameworkCore;
 using MediaTrackerAuthenticationService.utils;
+using System.Text.Json;
+
 
 namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
 {
@@ -154,8 +156,26 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
                 Console.WriteLine($"Headers: {response.Headers}");
                 Console.WriteLine($"Content: {await response.Content.ReadAsStringAsync()}");
 
+                var responseContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine(responseContent);
+
+
                 if (response.IsSuccessStatusCode)
                 {
+
+                    var tokenResponse = JsonSerializer.Deserialize<TokenResponse>(responseContent);
+                    var exampleDto = new AddPlatformConnectionDto
+                    {
+                        Platform = MediaPlatform.Youtube, // You should replace this with the appropriate platform
+                        AccessToken = tokenResponse.access_token,
+                        RefreshToken = tokenResponse.refresh_token,
+                        Scopes = tokenResponse.scope // Replace with the required scopes
+                    };
+
+                    var toInsert = _mapper.Map<PlatformConnection>(exampleDto);
+                    _context.PlatformConnections.Add(toInsert);
+                    await _context.SaveChangesAsync();
+
                     // Parse the JSON response to obtain the tokens
                     // var tokenResponse = await response.Content.ReadAsAsync<TokenResponse>();
 

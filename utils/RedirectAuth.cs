@@ -16,7 +16,8 @@ namespace MediaTrackerAuthenticationService.utils
                 $"&redirect_uri={_configuration["GoogleOauth:RedirectURI"]}" +
                 $"&scope={scope}" +
                 $"&response_type=code" +
-                $"&access_type=offline";
+                $"&access_type=offline" +
+                $"&prompt=consent";
 
             return oauthUrl;
         }

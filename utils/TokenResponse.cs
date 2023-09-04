@@ -1,6 +1,7 @@
 namespace MediaTrackerAuthenticationService.utils
+
 {
-    public class TokenReponse
+    public class TokenResponse
     {
         public required string access_token { get; set; }
         public required string token_type { get; set; }
