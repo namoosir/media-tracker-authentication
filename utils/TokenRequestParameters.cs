@@ -3,7 +3,7 @@ namespace MediaTrackerAuthenticationService.utils
     public class TokenRequestParameters
     {
         private string _code { get; set; }
-        public string tokenEndpoint { get; set; }
+        public string? tokenEndpoint { get; set; }
 
         private readonly IConfiguration _configuration;
 
@@ -18,11 +18,11 @@ namespace MediaTrackerAuthenticationService.utils
         {
             var parameters = new Dictionary<string, string>
             {
-                {"client_id", _configuration["GoogleOauth:ClientId"]},
-                {"client_secret", _configuration["GoogleOauth:ClientSecret"]},
-                {"code", _code},
-                {"redirect_uri", _configuration["GoogleOauth:RedirectURI"]},
-                {"grant_type", "authorization_code"}
+                { "client_id", _configuration["GoogleOauth:ClientId"] },
+                { "client_secret", _configuration["GoogleOauth:ClientSecret"] },
+                { "code", _code },
+                { "redirect_uri", _configuration["GoogleOauth:RedirectURI"] },
+                { "grant_type", "authorization_code" }
             };
 
             return parameters;

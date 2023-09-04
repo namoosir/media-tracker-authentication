@@ -13,7 +13,12 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
 
-        public PlatformConnectionService(IMapper mapper, AppDbContext context, HttpClient httpClient, IConfiguration configuration)
+        public PlatformConnectionService(
+            IMapper mapper,
+            AppDbContext context,
+            HttpClient httpClient,
+            IConfiguration configuration
+        )
         {
             _mapper = mapper;
             _context = context;
@@ -108,23 +113,25 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
         public ServiceResponse<string> GetYoutube()
         {
             var serviceResponse = new ServiceResponse<string>();
-            var url = new RedirectAuth(_configuration).CreateUrl("https://www.googleapis.com/auth/youtube.readonly");
-            
+            var url = new RedirectAuth(_configuration).CreateUrl(
+                "https://www.googleapis.com/auth/youtube.readonly"
+            );
+
             serviceResponse.Data = url;
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<string>> GetRedirectYoutube(string code, string error)
+        public async Task<ServiceResponse<string>> GetRedirectYoutube(string? code, string? error)
         {
             var serviceResponse = new ServiceResponse<string>();
 
-            try 
+            try
             {
                 if (string.IsNullOrEmpty(code))
                 {
                     //figure out some way to do error state
                     Console.WriteLine("ISSUES" + error);
-                    
+
                     serviceResponse.Data = "https://google.com" + "?error=" + error;
 
                     throw new Exception(error);
@@ -132,11 +139,14 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
 
                 Console.WriteLine($"Authorization Code: {code}");
 
-                TokenRequestParameters requestParams = new TokenRequestParameters(_configuration, code);
+                TokenRequestParameters requestParams = new TokenRequestParameters(
+                    _configuration,
+                    code
+                );
 
                 var dict = requestParams.parametersToDictionary();
                 var content = new FormUrlEncodedContent(dict);
-                
+
                 var response = await _httpClient.PostAsync(requestParams.tokenEndpoint, content);
 
                 Console.WriteLine("HTTP Response:");
@@ -144,7 +154,8 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
                 Console.WriteLine($"Headers: {response.Headers}");
                 Console.WriteLine($"Content: {await response.Content.ReadAsStringAsync()}");
 
-                if (response.IsSuccessStatusCode){
+                if (response.IsSuccessStatusCode)
+                {
                     // Parse the JSON response to obtain the tokens
                     // var tokenResponse = await response.Content.ReadAsAsync<TokenResponse>();
 
@@ -163,7 +174,9 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
                 {
                     // Handle the error response
                     // You may want to log the error and take appropriate action
-                    throw new Exception($"Token exchange failed with status code {response.StatusCode}");
+                    throw new Exception(
+                        $"Token exchange failed with status code {response.StatusCode}"
+                    );
                 }
 
                 //everything succeeded at this point so redirect properly
@@ -180,6 +193,5 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
             // No content is returned to the client.
             return serviceResponse;
         }
-
     }
 }

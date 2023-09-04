@@ -3,15 +3,9 @@ using MediaTrackerAuthenticationService.Models;
 using MediaTrackerAuthenticationService.Services.PlatformConnectionService;
 using Microsoft.EntityFrameworkCore;
 
-
-
 var builder = WebApplication.CreateBuilder(args);
 
-
-// var configurationBuilder = new ConfigurationBuilder()
-//     .SetBasePath(builder.Environment.ContentRootPath)
-//     .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true)
-//     .AddEnvironmentVariables(); // This line adds support for reading environment variables
+// builder.Services.AddCors();
 
 // Add services to the container.
 builder.Services.AddDbContext<AppDbContext>(
@@ -37,6 +31,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// app.UseCors(builder => {
+//     builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+// });
 
 app.UseHttpsRedirection();
 
