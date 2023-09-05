@@ -4,6 +4,7 @@ using MediaTrackerAuthenticationService.Models;
 using Microsoft.EntityFrameworkCore;
 using MediaTrackerAuthenticationService.utils;
 using System.Text.Json;
+using MediaTrackerAuthenticationService.Data;
 
 namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
 {

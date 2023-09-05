@@ -1,7 +1,7 @@
 using MediaTrackerAuthenticationService.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace MediaTrackerAuthenticationService
+namespace MediaTrackerAuthenticationService.Data
 {
     public class AppDbContext : DbContext
     {

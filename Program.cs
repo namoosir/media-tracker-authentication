@@ -1,4 +1,5 @@
 using MediaTrackerAuthenticationService;
+using MediaTrackerAuthenticationService.Data;
 using MediaTrackerAuthenticationService.Models;
 using MediaTrackerAuthenticationService.Services.PlatformConnectionService;
 using Microsoft.EntityFrameworkCore;
@@ -18,16 +19,15 @@ builder.Services.AddControllers();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddCors(options =>
-    {
-        options.AddPolicy("AllowSpecificOrigins",
-            builder =>
-            {
-                builder
-                    .AllowAnyOrigin()
-                    .AllowAnyHeader()
-                    .AllowAnyMethod();
-            });
-    });
+{
+    options.AddPolicy(
+        "AllowSpecificOrigins",
+        builder =>
+        {
+            builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+        }
+    );
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
