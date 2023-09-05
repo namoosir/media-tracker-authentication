@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using MediaTrackerAuthenticationService.utils;
 using System.Text.Json;
 
-
 namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
 {
     public class PlatformConnectionService : IPlatformConnectionService
@@ -159,10 +158,8 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
                 var responseContent = await response.Content.ReadAsStringAsync();
                 Console.WriteLine(responseContent);
 
-
                 if (response.IsSuccessStatusCode)
                 {
-
                     var tokenResponse = JsonSerializer.Deserialize<TokenResponse>(responseContent);
                     var exampleDto = new AddPlatformConnectionDto
                     {
@@ -175,20 +172,6 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
                     var toInsert = _mapper.Map<PlatformConnection>(exampleDto);
                     _context.PlatformConnections.Add(toInsert);
                     await _context.SaveChangesAsync();
-
-                    // Parse the JSON response to obtain the tokens
-                    // var tokenResponse = await response.Content.ReadAsAsync<TokenResponse>();
-
-                    //             // Log the token response to the console
-                    // Console.WriteLine("Token Response:");
-                    // Console.WriteLine($"Access Token: {tokenResponse.access_token}");
-                    // Console.WriteLine($"Token Type: {tokenResponse.token_type}");
-                    // Console.WriteLine($"Expires In: {tokenResponse.expires_in}");
-                    // Console.WriteLine($"Refresh Token: {tokenResponse.refresh_token}");
-                    // Console.WriteLine($"Scope: {tokenResponse.scope}");
-                    // Console.WriteLine($"ID Token: {tokenResponse.id_token}");
-
-                    // return tokenResponse;
                 }
                 else
                 {
@@ -200,7 +183,7 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
                 }
 
                 //everything succeeded at this point so redirect properly
-                serviceResponse.Data = "https://google.com";
+                serviceResponse.Data = "http://localhost:5173/";
             }
             catch (Exception e)
             {
