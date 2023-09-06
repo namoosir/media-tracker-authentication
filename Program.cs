@@ -2,6 +2,8 @@ using MediaTrackerAuthenticationService;
 using MediaTrackerAuthenticationService.Data;
 using MediaTrackerAuthenticationService.Models;
 using MediaTrackerAuthenticationService.Services.PlatformConnectionService;
+using MediaTrackerAuthenticationService.Services.AuthService;
+using MediaTrackerAuthenticationService.Services.RequestUrlBuilderService;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 
@@ -42,6 +44,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IPlatformConnectionService, PlatformConnectionService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IRequestUrlBuilderService, RequestUrlBuilderService>();
 
 var app = builder.Build();
 

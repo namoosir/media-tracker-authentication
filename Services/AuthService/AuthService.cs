@@ -5,17 +5,19 @@ using Microsoft.EntityFrameworkCore;
 using MediaTrackerAuthenticationService.utils;
 using System.Text.Json;
 using MediaTrackerAuthenticationService.Data;
-using MediaTrackerAuthenticationService.Services
+using MediaTrackerAuthenticationService.Services.RequestUrlBuilderService;
 
 namespace MediaTrackerAuthenticationService.Services.AuthService
 {
     public class AuthService : IAuthService
     {
-         private readonly IRequestUrlBuilderService _requestUrlBuilderService;
+        private readonly IRequestUrlBuilderService _requestUrlBuilderService;
+        private readonly HttpClient _httpClient;
 
-        public AuthService(
-            IRequestUrlBuilderService requestUrlBuilderService;
-        )
+        public AuthService (
+            IRequestUrlBuilderService requestUrlBuilderService,
+            HttpClient httpClient
+            )
         {
             _requestUrlBuilderService = requestUrlBuilderService;
         }
@@ -54,7 +56,7 @@ namespace MediaTrackerAuthenticationService.Services.AuthService
 
                 if (response.IsSuccessStatusCode)
                 {
-                    AccessToken = tokenResponse.access_token,
+                
 
                     // Call User info API using token
                     // Extract localId

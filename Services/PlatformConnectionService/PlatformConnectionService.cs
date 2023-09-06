@@ -5,8 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using MediaTrackerAuthenticationService.utils;
 using System.Text.Json;
 using MediaTrackerAuthenticationService.Data;
-using MediaTrackerAuthenticationService.Services
-using MediaTrackerAuthenticationService.Services.RequestUrlBuilderService
+using MediaTrackerAuthenticationService.Services.RequestUrlBuilderService;
 
 namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
 {
@@ -17,13 +16,13 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
 
-        private readonly IRequestUrlBuilderService _requestUrlBuilderService
+        private readonly IRequestUrlBuilderService _requestUrlBuilderService;
 
         public PlatformConnectionService(
             IMapper mapper,
             AppDbContext context,
             HttpClient httpClient,
-            IConfiguration configuration
+            IConfiguration configuration,
             IRequestUrlBuilderService requestUrlBuilderService
 
         )
