@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using MediaTrackerAuthenticationService.utils;
 using System.Text.Json;
 using MediaTrackerAuthenticationService.Data;
+using MediaTrackerAuthenticationService.Services
+using MediaTrackerAuthenticationService.Services.RequestUrlBuilderService
 
 namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
 {
@@ -15,17 +17,22 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
 
+        private readonly IRequestUrlBuilderService _requestUrlBuilderService
+
         public PlatformConnectionService(
             IMapper mapper,
             AppDbContext context,
             HttpClient httpClient,
             IConfiguration configuration
+            IRequestUrlBuilderService requestUrlBuilderService
+
         )
         {
             _mapper = mapper;
             _context = context;
             _httpClient = httpClient;
             _configuration = configuration;
+            _requestUrlBuilderService = requestUrlBuilderService;
         }
 
         public async Task<ServiceResponse<GetPlatformConnectionDto>> AddPlatformConnection(
@@ -115,9 +122,7 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
         public ServiceResponse<string> GetYoutube()
         {
             var serviceResponse = new ServiceResponse<string>();
-            var url = new RedirectAuth(_configuration).CreateUrl(
-                "https://www.googleapis.com/auth/youtube.readonly"
-            );
+            var url = _requestUrlBuilderService.BuildGoogleAuthRequest(OauthRequestType.Youtube);
 
             serviceResponse.Data = url;
             return serviceResponse;
@@ -141,15 +146,8 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
 
                 Console.WriteLine($"Authorization Code: {code}");
 
-                TokenRequestParameters requestParams = new TokenRequestParameters(
-                    _configuration,
-                    code
-                );
-
-                var dict = requestParams.parametersToDictionary();
-                var content = new FormUrlEncodedContent(dict);
-
-                var response = await _httpClient.PostAsync(requestParams.tokenEndpoint, content);
+                var request = _requestUrlBuilderService.BuildGoogleTokenRequest(OauthRequestType.Youtube, code);
+                var response = await _httpClient.PostAsync(request.endpoint, request.body);
 
                 Console.WriteLine("HTTP Response:");
                 Console.WriteLine($"Status Code: {response.StatusCode}");

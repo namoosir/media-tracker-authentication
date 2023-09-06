@@ -3,6 +3,7 @@ using MediaTrackerAuthenticationService.Data;
 using MediaTrackerAuthenticationService.Models;
 using MediaTrackerAuthenticationService.Services.PlatformConnectionService;
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddDbContext<AppDbContext>(
     options => options.UseSqlServer(builder.Configuration.GetConnectionString("DBConnectionString"))
+);
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(
+    opt =>
+        ConnectionMultiplexer.Connect(
+            builder.Configuration.GetConnectionString("RedisConnectionString")
+        )
 );
 
 builder.Services.AddSingleton(builder.Configuration.GetSection("GoogleOauth"));

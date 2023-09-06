@@ -3,8 +3,8 @@ using MediaTrackerAuthenticationService.Models;
 
 namespace MediaTrackerAuthenticationService.Dtos.Auth
 {
-    public class WhoamiDto
+    public class SignInDto
     {
-        public required string UserId { get; set; }
+        public required string Token { get; set; }
     }
 }
