@@ -24,7 +24,6 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
             HttpClient httpClient,
             IConfiguration configuration,
             IRequestUrlBuilderService requestUrlBuilderService
-
         )
         {
             _mapper = mapper;
@@ -123,7 +122,7 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
             var serviceResponse = new ServiceResponse<string>();
             var url = _requestUrlBuilderService.BuildGoogleAuthRequest(OauthRequestType.Youtube);
 
-            serviceResponse.Data = url;
+            serviceResponse.Data = url.Data;
             return serviceResponse;
         }
 
@@ -145,8 +144,14 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
 
                 Console.WriteLine($"Authorization Code: {code}");
 
-                var request = _requestUrlBuilderService.BuildGoogleTokenRequest(OauthRequestType.Youtube, code);
-                var response = await _httpClient.PostAsync(request.endpoint, request.body);
+                var request = _requestUrlBuilderService.BuildGoogleTokenRequest(
+                    OauthRequestType.Youtube,
+                    code
+                );
+                var response = await _httpClient.PostAsync(
+                    request.Data.endpoint,
+                    request.Data.body
+                );
 
                 Console.WriteLine("HTTP Response:");
                 Console.WriteLine($"Status Code: {response.StatusCode}");

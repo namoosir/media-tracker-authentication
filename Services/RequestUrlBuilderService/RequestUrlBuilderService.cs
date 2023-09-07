@@ -17,8 +17,9 @@ namespace MediaTrackerAuthenticationService.Services.RequestUrlBuilderService
             _configuration = configuration;
         }
 
-        public string BuildGoogleAuthRequest(OauthRequestType type)
+        public ServiceResponse<string> BuildGoogleAuthRequest(OauthRequestType type)
         {
+            var serviceResponse = new ServiceResponse<string>();
             string endpoint = _configuration["GoogleOauth:Endpoint:Auth"];
             string clientId = _configuration["GoogleOauth:ClientId"];
             string siteDomain = _configuration["Site:Domain"];
@@ -49,14 +50,16 @@ namespace MediaTrackerAuthenticationService.Services.RequestUrlBuilderService
                 + $"&access_type={accessType}"
                 + $"&prompt=consent{prompt}";
 
-            return oauthUrl;
+            serviceResponse.Data = oauthUrl;
+            return serviceResponse;
         }
 
-        public (string endpoint, HttpContent body) BuildGoogleTokenRequest(
+        public ServiceResponse<(string endpoint, HttpContent body)> BuildGoogleTokenRequest(
             OauthRequestType type,
             string code
         )
         {
+            var serviceResponse = new ServiceResponse<(string, HttpContent)>();
             string endpoint = _configuration["GoogleOauth:Endpoint:Token"];
             string clientId = _configuration["GoogleOauth:ClientId"];
             string clientSecret = _configuration["GoogleOauth:ClientSecret"];
@@ -81,7 +84,8 @@ namespace MediaTrackerAuthenticationService.Services.RequestUrlBuilderService
 
             var body = new FormUrlEncodedContent(parameters);
 
-            return (endpoint, body);
+            serviceResponse.Data = (endpoint, body);
+            return serviceResponse;
         }
     }
 }

@@ -14,24 +14,21 @@ namespace MediaTrackerAuthenticationService.Services.AuthService
         private readonly IRequestUrlBuilderService _requestUrlBuilderService;
         private readonly HttpClient _httpClient;
 
-        public AuthService (
+        public AuthService(
             IRequestUrlBuilderService requestUrlBuilderService,
             HttpClient httpClient
-            )
+        )
         {
             _requestUrlBuilderService = requestUrlBuilderService;
         }
 
         public ServiceResponse<string> GetGoogle()
         {
-            var serviceResponse = new ServiceResponse<string>();
             var url = _requestUrlBuilderService.BuildGoogleAuthRequest(OauthRequestType.Login);
-
-            serviceResponse.Data = url;
-            return serviceResponse;
+            return url;
         }
 
-         public async Task<ServiceResponse<string>> GetRedirectGoogle(string? code, string? error)
+        public async Task<ServiceResponse<string>> GetRedirectGoogle(string? code, string? error)
         {
             var serviceResponse = new ServiceResponse<string>();
 
@@ -49,15 +46,19 @@ namespace MediaTrackerAuthenticationService.Services.AuthService
 
                 Console.WriteLine($"Authorization Code: {code}");
 
-                var request = _requestUrlBuilderService.BuildGoogleTokenRequest(OauthRequestType.Login, code);
-                var response = await _httpClient.PostAsync(request.endpoint, request.body);
+                var request = _requestUrlBuilderService.BuildGoogleTokenRequest(
+                    OauthRequestType.Login,
+                    code
+                );
+                var response = await _httpClient.PostAsync(
+                    request.Data.endpoint,
+                    request.Data.body
+                );
 
                 var responseContent = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
                 {
-                
-
                     // Call User info API using token
                     // Extract localId
                     // Save user profile under a New user table ("Interal Id", "External Id", "Platform")
