@@ -23,6 +23,8 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(
         )
 );
 
+builder.Services.AddScoped<IUserInformationRepository, UserInformationRepository>();
+
 builder.Services.AddSingleton(builder.Configuration.GetSection("GoogleOauth"));
 
 builder.Services.AddControllers();
