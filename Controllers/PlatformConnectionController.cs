@@ -7,7 +7,7 @@ using System.Net.Http;
 namespace MediaTrackerAuthenticationService.Controllers;
 
 [ApiController]
-[Route("auth/[controller]")]
+[Route("[controller]")]
 public class PlatformConnectionController : ControllerBase
 {
     private readonly IPlatformConnectionService _platformConnectionService;
@@ -53,14 +53,14 @@ public class PlatformConnectionController : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet("request/youtube")]
+    [HttpGet("action/request/youtube")]
     public ActionResult<ServiceResponse<string>> GetYoutube()
     {
         var response = _platformConnectionService.GetYoutube();
         return Ok(response);
     }
 
-    [HttpGet("redirect/youtube")]
+    [HttpGet("action/redirect/youtube")]
     public async Task<ActionResult> GetRedirectYoutube(
         [FromQuery] IDictionary<string, string> queryParameters
     )
