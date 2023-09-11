@@ -8,5 +8,8 @@ namespace MediaTrackerAuthenticationService.utils
         public required int expires_in { get; set; }
         public required string refresh_token { get; set; }
         public required string scope { get; set; }
+
+        public string? id_token { get; set; }
     }
+
 }

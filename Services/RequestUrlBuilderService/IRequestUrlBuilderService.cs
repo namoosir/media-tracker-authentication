@@ -9,5 +9,7 @@ namespace MediaTrackerAuthenticationService.Services.RequestUrlBuilderService
             OauthRequestType type,
             string code
         );
+
+        ServiceResponse<string> BuildGoogleUserInfoRequest();
     }
 }

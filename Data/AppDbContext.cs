@@ -9,5 +9,6 @@ namespace MediaTrackerAuthenticationService.Data
             : base(options) { }
 
         public DbSet<PlatformConnection> PlatformConnections => Set<PlatformConnection>();
+        public DbSet<User> Users => Set<User>();
     }
 }

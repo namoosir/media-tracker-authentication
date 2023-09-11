@@ -6,6 +6,8 @@ namespace MediaTrackerAuthenticationService.Models
     public enum MediaPlatform
     {
         Youtube = 1,
-        Facebook = 2
+        Facebook = 2,
+
+        Google = 3,
     }
 }

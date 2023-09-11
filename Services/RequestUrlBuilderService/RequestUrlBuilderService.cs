@@ -29,26 +29,26 @@ namespace MediaTrackerAuthenticationService.Services.RequestUrlBuilderService
 
             string scope =
                 (type == OauthRequestType.Login)
-                    ? "openid"
+                    ? _configuration["Site:RequestScopes:Login:Google"]
                     : (type == OauthRequestType.Youtube)
-                        ? "https://www.googleapis.com/auth/youtube.readonly"
+                        ? _configuration["Site:RequestScopes:Resource:Youtube"]
                         : throw new ArgumentException("Invalid OauthRequestType");
 
             string handlerEndpoint =
                 (type == OauthRequestType.Login)
-                    ? "/auth/redirect/sign"
+                    ? _configuration["Site:OauthRedirectPath:Login:Google"]
                     : (type == OauthRequestType.Youtube)
-                        ? "/auth/platformconnection/redirect/youtube"
+                        ? _configuration["Site:OauthRedirectPath:Resource:Youtube"]
                         : throw new ArgumentException("Invalid OauthRequestType");
 
             string oauthUrl =
                 $"{endpoint}"
                 + $"?client_id={clientId}"
-                + $"&redirect_uri={siteDomain + handlerEndpoint}"
+                + $"&redirect_uri={siteDomain + '/' + handlerEndpoint}"
                 + $"&scope={scope}"
                 + $"&response_type={responseType}"
                 + $"&access_type={accessType}"
-                + $"&prompt=consent{prompt}";
+                + $"&prompt={prompt}";
 
             serviceResponse.Data = oauthUrl;
             return serviceResponse;
@@ -68,9 +68,9 @@ namespace MediaTrackerAuthenticationService.Services.RequestUrlBuilderService
 
             string handlerEndpoint =
                 (type == OauthRequestType.Login)
-                    ? "/auth/redirect/sign"
+                    ? _configuration["Site:OauthRedirectPath:Login:Google"]
                     : (type == OauthRequestType.Youtube)
-                        ? "/auth/platformconnection/redirect/youtube"
+                        ? _configuration["Site:OauthRedirectPath:Resource:Youtube"]
                         : throw new ArgumentException("Invalid OauthRequestType");
 
             var parameters = new Dictionary<string, string>
@@ -78,7 +78,7 @@ namespace MediaTrackerAuthenticationService.Services.RequestUrlBuilderService
                 { "client_id", clientId },
                 { "client_secret", clientSecret },
                 { "code", code },
-                { "redirect_uri", siteDomain + handlerEndpoint },
+                { "redirect_uri", siteDomain + '/' +  handlerEndpoint },
                 { "grant_type", grant_type }
             };
 
@@ -87,5 +87,14 @@ namespace MediaTrackerAuthenticationService.Services.RequestUrlBuilderService
             serviceResponse.Data = (endpoint, body);
             return serviceResponse;
         }
+
+        public ServiceResponse<string> BuildGoogleUserInfoRequest()
+        {
+            var serviceResponse = new ServiceResponse<string>();
+            serviceResponse.Data = _configuration["GoogleOauth:Endpoint:UserInfo"];
+            return serviceResponse;
+        }
     }
+
+
 }

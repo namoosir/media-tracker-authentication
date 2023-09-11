@@ -42,6 +42,8 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
             try
             {
                 var toInsert = _mapper.Map<PlatformConnection>(newPlatformConnection);
+                Console.WriteLine($"Authorization Code: {toInsert.UserId}");
+
                 _context.PlatformConnections.Add(toInsert);
                 await _context.SaveChangesAsync();
                 serviceResponse.Data = _mapper.Map<GetPlatformConnectionDto>(toInsert);

@@ -17,7 +17,7 @@ public class Auth : ControllerBase
         _authService = authService;
     }
 
-    [HttpPost("sign/google")]
+    [HttpGet("sign/google")]
     public ActionResult<ServiceResponse<string>> Get()
     {
         var response = _authService.GetGoogle();
