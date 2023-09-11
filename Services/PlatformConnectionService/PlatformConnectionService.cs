@@ -6,6 +6,9 @@ using MediaTrackerAuthenticationService.utils;
 using System.Text.Json;
 using MediaTrackerAuthenticationService.Data;
 using MediaTrackerAuthenticationService.Services.RequestUrlBuilderService;
+using MediaTrackerAuthenticationService.Services.HttpRequestService;
+
+
 
 namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
 {
@@ -17,13 +20,15 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
         private readonly IConfiguration _configuration;
 
         private readonly IRequestUrlBuilderService _requestUrlBuilderService;
+        private readonly IHttpRequestService _httpRequestService;
 
         public PlatformConnectionService(
             IMapper mapper,
             AppDbContext context,
             HttpClient httpClient,
             IConfiguration configuration,
-            IRequestUrlBuilderService requestUrlBuilderService
+            IRequestUrlBuilderService requestUrlBuilderService,
+            IHttpRequestService httpRequestService
         )
         {
             _mapper = mapper;
@@ -31,6 +36,7 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
             _httpClient = httpClient;
             _configuration = configuration;
             _requestUrlBuilderService = requestUrlBuilderService;
+            _httpRequestService = httpRequestService;
         }
 
         public async Task<ServiceResponse<GetPlatformConnectionDto>> AddPlatformConnection(
@@ -146,46 +152,23 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
 
                 Console.WriteLine($"Authorization Code: {code}");
 
-                var request = _requestUrlBuilderService.BuildGoogleTokenRequest(
-                    OauthRequestType.Youtube,
-                    code
-                );
-                var response = await _httpClient.PostAsync(
-                    request.Data.endpoint,
-                    request.Data.body
-                );
+                
 
-                Console.WriteLine("HTTP Response:");
-                Console.WriteLine($"Status Code: {response.StatusCode}");
-                Console.WriteLine($"Headers: {response.Headers}");
-                Console.WriteLine($"Content: {await response.Content.ReadAsStringAsync()}");
+                var tokenResponse = (await _httpRequestService.GetTokensGoogle(OauthRequestType.Youtube, code)).Data;
 
-                var responseContent = await response.Content.ReadAsStringAsync();
-                Console.WriteLine(responseContent);
 
-                if (response.IsSuccessStatusCode)
+                var exampleDto = new AddPlatformConnectionDto
                 {
-                    var tokenResponse = JsonSerializer.Deserialize<TokenResponse>(responseContent);
-                    var exampleDto = new AddPlatformConnectionDto
-                    {
-                        Platform = MediaPlatform.Youtube, // You should replace this with the appropriate platform
-                        AccessToken = tokenResponse.access_token,
-                        RefreshToken = tokenResponse.refresh_token,
-                        Scopes = tokenResponse.scope // Replace with the required scopes
-                    };
+                    Platform = MediaPlatform.Youtube, // You should replace this with the appropriate platform
+                    AccessToken = tokenResponse.access_token,
+                    RefreshToken = tokenResponse.refresh_token,
+                    Scopes = tokenResponse.scope // Replace with the required scopes
+                };
 
-                    var toInsert = _mapper.Map<PlatformConnection>(exampleDto);
-                    _context.PlatformConnections.Add(toInsert);
-                    await _context.SaveChangesAsync();
-                }
-                else
-                {
-                    // Handle the error response
-                    // You may want to log the error and take appropriate action
-                    throw new Exception(
-                        $"Token exchange failed with status code {response.StatusCode}"
-                    );
-                }
+                var toInsert = _mapper.Map<PlatformConnection>(exampleDto);
+                _context.PlatformConnections.Add(toInsert);
+                await _context.SaveChangesAsync();
+                
 
                 //everything succeeded at this point so redirect properly
                 serviceResponse.Data = "http://localhost:5173/";

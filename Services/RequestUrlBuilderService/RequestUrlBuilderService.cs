@@ -28,14 +28,14 @@ namespace MediaTrackerAuthenticationService.Services.RequestUrlBuilderService
             string prompt = "consent";
 
             string scope =
-                (type == OauthRequestType.Login)
+                (type == OauthRequestType.GoogleLogin)
                     ? _configuration["Site:RequestScopes:Login:Google"]
                     : (type == OauthRequestType.Youtube)
                         ? _configuration["Site:RequestScopes:Resource:Youtube"]
                         : throw new ArgumentException("Invalid OauthRequestType");
 
             string handlerEndpoint =
-                (type == OauthRequestType.Login)
+                (type == OauthRequestType.GoogleLogin)
                     ? _configuration["Site:OauthRedirectPath:Login:Google"]
                     : (type == OauthRequestType.Youtube)
                         ? _configuration["Site:OauthRedirectPath:Resource:Youtube"]
@@ -67,7 +67,7 @@ namespace MediaTrackerAuthenticationService.Services.RequestUrlBuilderService
             string grant_type = "authorization_code";
 
             string handlerEndpoint =
-                (type == OauthRequestType.Login)
+                (type == OauthRequestType.GoogleLogin)
                     ? _configuration["Site:OauthRedirectPath:Login:Google"]
                     : (type == OauthRequestType.Youtube)
                         ? _configuration["Site:OauthRedirectPath:Resource:Youtube"]

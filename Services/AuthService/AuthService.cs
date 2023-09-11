@@ -7,6 +7,8 @@ using MediaTrackerAuthenticationService.utils;
 using System.Text.Json;
 using MediaTrackerAuthenticationService.Data;
 using MediaTrackerAuthenticationService.Services.RequestUrlBuilderService;
+using MediaTrackerAuthenticationService.Services.SessionTokenService;
+using MediaTrackerAuthenticationService.Services.HttpRequestService;
 using Microsoft.AspNetCore.Mvc.Routing;
 using System.Net.Http.Headers;
 
@@ -15,6 +17,10 @@ namespace MediaTrackerAuthenticationService.Services.AuthService
     public class AuthService : IAuthService
     {
         private readonly IRequestUrlBuilderService _requestUrlBuilderService;
+        private readonly ISessionTokenService _sessionTokenService;
+        private readonly IHttpRequestService _httpRequestService;
+
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly HttpClient _httpClient;
 
         private readonly AppDbContext _dbContext;
@@ -23,20 +29,26 @@ namespace MediaTrackerAuthenticationService.Services.AuthService
 
         public AuthService(
             IRequestUrlBuilderService requestUrlBuilderService,
+            ISessionTokenService sessionTokenService,
+            IHttpRequestService httpRequestService,
             HttpClient httpClient,
+            IHttpContextAccessor httpContextAccessor,
             AppDbContext appDbContext,
             IMapper mapper
         )
         {
             _requestUrlBuilderService = requestUrlBuilderService;
+            _sessionTokenService = sessionTokenService;
+            _httpRequestService = httpRequestService;
             _httpClient = httpClient;
+            _httpContextAccessor = httpContextAccessor;
             _dbContext = appDbContext;
             _mapper = mapper;
         }
 
         public ServiceResponse<string> GetGoogle()
         {
-            var url = _requestUrlBuilderService.BuildGoogleAuthRequest(OauthRequestType.Login);
+            var url = _requestUrlBuilderService.BuildGoogleAuthRequest(OauthRequestType.GoogleLogin);
             return url;
         }
 
@@ -50,86 +62,36 @@ namespace MediaTrackerAuthenticationService.Services.AuthService
                 {
                     //figure out some way to do error state
                     Console.WriteLine("ISSUES" + error);
-
                     serviceResponse.Data = "https://google.com" + "?error=" + error;
-
                     throw new Exception(error);
                 }
 
-                Console.WriteLine($"Authorization Code: {code}");
+                string accessToken = (await _httpRequestService.GetTokensGoogle(OauthRequestType.GoogleLogin, code)).Data.access_token;  
 
-                var request = _requestUrlBuilderService.BuildGoogleTokenRequest(
-                    OauthRequestType.Login,
-                    code
-                );
+                string externalUserId = (await _httpRequestService.GetUserInfoGoogle(accessToken)).Data.sub;
 
-                var response = await _httpClient.PostAsync(
-                    request.Data.endpoint,
-                    request.Data.body
-                );
+                var exampleDto = new AddUserDto {
+                    Platform = MediaPlatform.Youtube,
+                    PlatformId = externalUserId
+                };
 
-                var responseContent = await response.Content.ReadAsStringAsync();
+                var toInsert = _mapper.Map<User>(exampleDto);
+                _dbContext.Users.Add(toInsert);
+                await _dbContext.SaveChangesAsync();
 
+                var sessionToken = _sessionTokenService.GenerateToken(toInsert.UserId);
 
-                
-                Console.WriteLine("HTTP Response:");
-                Console.WriteLine($"Status Code: {response.StatusCode}");
-                Console.WriteLine($"Headers: {response.Headers}");
-                Console.WriteLine($"Content: {await response.Content.ReadAsStringAsync()}");
+                _httpContextAccessor.HttpContext.Response.Headers.Add("Authorization", "Bearer " + sessionToken);
 
-                if (response.IsSuccessStatusCode)
-                {
-                    var deserialzedContent = JsonSerializer.Deserialize<TokenResponse>(responseContent);
-                    string accessToken = deserialzedContent.access_token;
-
-                    var userInfoUrl = _requestUrlBuilderService.BuildGoogleUserInfoRequest();
-                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-                    response = await _httpClient.GetAsync(userInfoUrl.Data);
-
-                    if (response.IsSuccessStatusCode) {
-                        string content = await response.Content.ReadAsStringAsync();
-                        Console.WriteLine($"CONTENT: {await response.Content.ReadAsStringAsync()}");
-
-                        var deserialzedContent2 = JsonSerializer.Deserialize<UserInfoResponse>(content);
-                        string externalUserId = deserialzedContent2.sub;
-
-                        var exampleDto = new AddUserDto {
-                            Platform = MediaPlatform.Youtube,
-                            PlatformId = externalUserId
-                        };
-
-                        Console.WriteLine($" lksflkdsmlkf {exampleDto.PlatformId}");
-
-                        var toInsert = _mapper.Map<User>(exampleDto);
-                        _dbContext.Users.Add(toInsert);
-                        await _dbContext.SaveChangesAsync();
-                        }
-                    else {
-                        throw new HttpRequestException($"Error calling userinfo endpoint: {response.StatusCode}");
-                    }
-                    
-                }
-                else
-                {
-                    // Handle the error response
-                    // You may want to log the error and take appropriate action
-                    throw new Exception(
-                        $"Token exchange failed with status code {response.StatusCode}"
-                    );
-                }
-
-                //everything succeeded at this point so redirect properly
+                // Set the response data or message
                 serviceResponse.Data = "http://localhost:5173/";
+
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 serviceResponse.Success = false;
                 serviceResponse.Message = e.Message;
             }
 
-            // You can also use 'state' for additional validation or context if needed.
-
-            // No content is returned to the client.
             return serviceResponse;
         }
     }

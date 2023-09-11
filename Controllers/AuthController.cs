@@ -25,7 +25,7 @@ public class Auth : ControllerBase
     }
 
     [HttpGet("sign/redirect/google")]
-    public async Task<ActionResult> GetRedirectYoutube(
+    public async Task<ActionResult> GetRedirectGoogle(
         [FromQuery] IDictionary<string, string> queryParameters
     )
     {
