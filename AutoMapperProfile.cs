@@ -12,7 +12,9 @@ namespace MediaTrackerAuthenticationService
             CreateMap<PlatformConnection, GetPlatformConnectionDto>();
             CreateMap<AddPlatformConnectionDto, PlatformConnection>();
 
+            CreateMap<User, GetUserDto>();
             CreateMap<AddUserDto, User>();
+            CreateMap<UpsertUserDto, AddUserDto>();
         }
     }
 }

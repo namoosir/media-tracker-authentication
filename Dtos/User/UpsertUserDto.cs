@@ -3,7 +3,7 @@ using MediaTrackerAuthenticationService.Models;
 
 namespace MediaTrackerAuthenticationService.Dtos.User
 {
-    public class AddUserDto
+    public class UpsertUserDto
     {
         public required MediaPlatform Platform { get; set; }
 

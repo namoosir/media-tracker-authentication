@@ -1,12 +1,14 @@
-using MediaTrackerAuthenticationService;
 using MediaTrackerAuthenticationService.Data;
-using MediaTrackerAuthenticationService.Models;
 using MediaTrackerAuthenticationService.Services.PlatformConnectionService;
 using MediaTrackerAuthenticationService.Services.AuthService;
 using MediaTrackerAuthenticationService.Services.RequestUrlBuilderService;
+using MediaTrackerAuthenticationService.Services.HttpRequestService;
+using MediaTrackerAuthenticationService.Services.UserService;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 using MediaTrackerAuthenticationService.Services.SessionTokenService;
+using MediaTrackerAuthenticationService.Controllers;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,7 +26,14 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(
         )
 );
 
+builder.Services.AddScoped<IHttpRequestService, HttpRequestService>();
+builder.Services.AddScoped<ISessionTokenService, SessionTokenService>();
+builder.Services.AddScoped<IRequestUrlBuilderService, RequestUrlBuilderService>();
+builder.Services.AddScoped<IPlatformConnectionService, PlatformConnectionService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserInformationRepository, UserInformationRepository>();
+builder.Services.AddScoped<UserInformationController>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddSingleton(builder.Configuration.GetSection("GoogleOauth"));
 
@@ -47,10 +56,6 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddHttpClient();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<IPlatformConnectionService, PlatformConnectionService>();
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IRequestUrlBuilderService, RequestUrlBuilderService>();
-builder.Services.AddScoped<ISessionTokenService, SessionTokenService>();
 
 var app = builder.Build();
 

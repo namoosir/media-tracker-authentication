@@ -37,11 +37,10 @@ public class HttpRequestService : IHttpRequestService
 
         if (response.IsSuccessStatusCode) {
             var deserialzedContent = JsonSerializer.Deserialize<TokenResponse>(responseContentString);
-            return ServiceResponseBuilder.build(deserialzedContent);
+            return ServiceResponse<TokenResponse>.Build(deserialzedContent, true, null);
         } else {
             throw new Exception($"Token exchange failed with status code {response.StatusCode}");
         }
-
     }
 
     public async Task<ServiceResponse<UserInfoResponse>> GetUserInfoGoogle(string accessToken)
@@ -54,14 +53,10 @@ public class HttpRequestService : IHttpRequestService
             var responseContentString = await response.Content.ReadAsStringAsync();
 
             var deserialzedContent = JsonSerializer.Deserialize<UserInfoResponse>(responseContentString);
-            return ServiceResponseBuilder.build(deserialzedContent);
+            return ServiceResponse<UserInfoResponse>.Build(deserialzedContent, true, null);
         } else {
             throw new HttpRequestException($"Error calling userinfo endpoint: {response.StatusCode}");
         }
-
-        
-
     }
-
 }
 

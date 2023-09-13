@@ -152,7 +152,7 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
 
                 Console.WriteLine($"Authorization Code: {code}");
 
-                
+
 
                 var tokenResponse = (await _httpRequestService.GetTokensGoogle(OauthRequestType.Youtube, code)).Data;
 
@@ -168,7 +168,7 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
                 var toInsert = _mapper.Map<PlatformConnection>(exampleDto);
                 _context.PlatformConnections.Add(toInsert);
                 await _context.SaveChangesAsync();
-                
+
 
                 //everything succeeded at this point so redirect properly
                 serviceResponse.Data = "http://localhost:5173/";

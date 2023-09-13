@@ -1,4 +1,3 @@
-using MediaTrackerAuthenticationService.Dtos.Auth;
 using MediaTrackerAuthenticationService.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http;
@@ -42,5 +41,19 @@ public class Auth : ControllerBase
         }
 
         return Redirect(response.Data);
+    }
+
+    [HttpGet("refreshtoken/{userId}")]
+    public async Task<ActionResult> RefreshToken(int userId)
+    {
+        var response = await _authService.RefreshSession(userId);
+        return Ok(response);
+    }
+
+    [HttpGet("logout/{userId}")]
+    public async Task<ActionResult> Logout(int userId)
+    {
+        var response = await _authService.LogoutSession(userId);
+        return Ok(response);
     }
 }

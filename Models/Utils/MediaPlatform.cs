@@ -7,7 +7,6 @@ namespace MediaTrackerAuthenticationService.Models
     {
         Youtube = 1,
         Facebook = 2,
-
         Google = 3,
     }
 }

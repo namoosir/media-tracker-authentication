@@ -1,5 +1,6 @@
 using MediaTrackerAuthenticationService.Data;
 using MediaTrackerAuthenticationService.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MediaTrackerAuthenticationService.Controllers;
 
@@ -12,11 +13,11 @@ public class UserInformationController
         _userInformationRepository = userInformationRepository;
     }
 
-    public async Task<ServiceResponse<UserInformation>> GetUserIdByToken(string token)
+    public async Task<ServiceResponse<UserInformation>> GetByUserId(int userId)
     {
         var serviceResponse = new ServiceResponse<UserInformation>
         {
-            Data = await _userInformationRepository.GetUserIdByToken(token)
+            Data = await _userInformationRepository.GetUserInformationByUserId(userId)
         };
 
         if (serviceResponse.Data is null)
@@ -42,17 +43,32 @@ public class UserInformationController
         return serviceResponse;
     }
 
-    public async Task<ServiceResponse<bool>> DeleteUserInformation(string token)
+    public async Task<ServiceResponse<bool>> DeleteUserInformationByUserId(int userId)
     {
         var serviceResponse = new ServiceResponse<bool>
         {
-            Data = await _userInformationRepository.DeleteUserInformation(token)
+            Data = await _userInformationRepository.DeleteUserInformationByUserId(userId)
         };
 
         if (!serviceResponse.Data)
         {
             serviceResponse.Success = false;
             serviceResponse.Message = "Failed to delete user";
+        }
+        return serviceResponse;
+    }
+
+    public async Task<ServiceResponse<bool>> UpdateUserInformation(UserInformation newUserInformation)
+    {
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = await _userInformationRepository.UpdateUserInformation(newUserInformation)
+        };
+
+        if (!serviceResponse.Data)
+        {
+            serviceResponse.Success = false;
+            serviceResponse.Message = "Failed to update user";
         }
         return serviceResponse;
     }
