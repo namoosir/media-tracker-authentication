@@ -8,12 +8,12 @@ using System.Security.Claims;
 namespace MediaTrackerAuthenticationService.Services.SessionTokenService;
 public class SessionTokenService : ISessionTokenService
 {
-        private readonly IConfiguration _configuration;
+    private readonly IConfiguration _configuration;
 
-        public SessionTokenService(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
+    public SessionTokenService(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
 
     public string GenerateToken(int userId)
     {
