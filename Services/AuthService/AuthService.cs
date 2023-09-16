@@ -94,7 +94,15 @@ namespace MediaTrackerAuthenticationService.Services.AuthService
                     if (!createdResult.Success) throw new Exception(createdResult.Message);
                 }
 
-                _httpContextAccessor.HttpContext.Response.Headers.Add("Authorization", "Bearer " + sessionToken);
+                // _httpContextAccessor.HttpContext.Response.Headers.Add("Authorization", "Bearer " + sessionToken);
+
+                _httpContextAccessor.HttpContext.Response.Cookies.Append("SessionToken", sessionToken, new CookieOptions
+                {
+                    HttpOnly = true, // The cookie is only accessible via HTTP requests
+                    Secure = true, // Ensure that the cookie is only sent over HTTPS
+                    SameSite = SameSiteMode.None, // Adjust this based on your application's requirements
+                });
+
                 serviceResponse.Data = "http://localhost:5173/";
 
             }

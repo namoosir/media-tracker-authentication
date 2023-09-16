@@ -97,7 +97,7 @@ public class UserService : IUserService
             if (user is null)
             {
                 var toAdd = _mapper.Map<AddUserDto>(upsertUser);
-                user = _mapper.Map<User>((await AddUser(toAdd)).Data);
+                return await AddUser(toAdd);
             }
             
             serviceResponse.Data = _mapper.Map<GetUserDto>(user);

@@ -2,6 +2,7 @@ using MediaTrackerAuthenticationService.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http;
 using MediaTrackerAuthenticationService.Services.AuthService;
+using System.Diagnostics.Tracing;
 
 namespace MediaTrackerAuthenticationService.Controllers;
 
@@ -20,6 +21,14 @@ public class Auth : ControllerBase
     public ActionResult<ServiceResponse<string>> Get()
     {
         var response = _authService.GetGoogle();
+        Response.Cookies.Append("SessionToken", "sdfdsfds", new CookieOptions
+        {
+            IsEssential=true,
+            Secure=false,
+            Domain="http://127.0.0.1",
+            SameSite = SameSiteMode.None
+            
+        });
         return Ok(response);
     }
 
@@ -39,6 +48,13 @@ public class Auth : ControllerBase
         {
             return StatusCode(500, response); //TODO: change to correct status code and maybe add a better message
         }
+
+        Response.Cookies.Append("SessionToken", "sdfdsfds", new CookieOptions
+        {
+            HttpOnly = true, // The cookie is only accessible via HTTP requests
+            Secure = true, // Ensure that the cookie is only sent over HTTPS
+            SameSite = SameSiteMode.None, // Adjust this based on your application's requirements
+        });
 
         return Redirect(response.Data);
     }
