@@ -1,4 +1,4 @@
-namespace MediaTrackerAuthenticationService.Models;
+namespace MediaTrackerAuthenticationService.Models.Redis;
 
 public class UserInformation
 {

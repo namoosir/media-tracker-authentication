@@ -40,16 +40,18 @@ builder.Services.AddSingleton(builder.Configuration.GetSection("GoogleOauth"));
 builder.Services.AddControllers();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(
-        "AllowSpecificOrigins",
-        builder =>
-        {
-            builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
-        }
-    );
-});
+// builder.Services.AddCors(options =>
+// {
+//     options.AddPolicy(
+//         "AllowSpecificOrigins",
+//         builder =>
+//         {
+//             builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+//         }
+//     );
+
+
+// });
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -69,10 +71,11 @@ if (app.Environment.IsDevelopment())
 // app.UseCors(builder => {
 //     builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
 // });
-app.UseCors("AllowSpecificOrigins");
+// app.UseCors("AllowSpecificOrigins");
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+app.UseAuthentication();
 
 app.MapControllers();
 

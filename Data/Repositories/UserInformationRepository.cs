@@ -1,5 +1,6 @@
 using System.Text.Json;
-using MediaTrackerAuthenticationService.Models;
+using MediaTrackerAuthenticationService.Models.Utils;
+using MediaTrackerAuthenticationService.Models.Redis;
 using StackExchange.Redis;
 
 namespace MediaTrackerAuthenticationService.Data;

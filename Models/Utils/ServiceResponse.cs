@@ -1,4 +1,4 @@
-namespace MediaTrackerAuthenticationService.Models
+namespace MediaTrackerAuthenticationService.Models.Utils
 {
     public class ServiceResponse<T>
     {

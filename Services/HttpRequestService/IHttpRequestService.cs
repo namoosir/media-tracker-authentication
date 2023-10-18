@@ -1,4 +1,4 @@
-using MediaTrackerAuthenticationService.Models;
+using MediaTrackerAuthenticationService.Models.Utils;
 using MediaTrackerAuthenticationService.utils;
 
 namespace MediaTrackerAuthenticationService.Services.HttpRequestService

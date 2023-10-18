@@ -1,7 +1,7 @@
 using AutoMapper;
 using MediaTrackerAuthenticationService.Dtos.PlatformConnection;
 using MediaTrackerAuthenticationService.Dtos.User;
-using MediaTrackerAuthenticationService.Models;
+using MediaTrackerAuthenticationService.Models.Utils;
 using Microsoft.EntityFrameworkCore;
 using MediaTrackerAuthenticationService.utils;
 using System.Text.Json;

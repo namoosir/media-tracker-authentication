@@ -1,7 +1,8 @@
 using AutoMapper;
 using MediaTrackerAuthenticationService.Dtos.PlatformConnection;
 using MediaTrackerAuthenticationService.Dtos.User;
-using MediaTrackerAuthenticationService.Models;
+using MediaTrackerAuthenticationService.Models.AuthDB;
+using MediaTrackerAuthenticationService.Models.Utils;
 
 namespace MediaTrackerAuthenticationService
 {

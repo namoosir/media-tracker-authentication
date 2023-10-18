@@ -1,12 +1,13 @@
 using AutoMapper;
 using MediaTrackerAuthenticationService.Dtos.PlatformConnection;
-using MediaTrackerAuthenticationService.Models;
+using MediaTrackerAuthenticationService.Models.Utils;
 using Microsoft.EntityFrameworkCore;
 using MediaTrackerAuthenticationService.utils;
 using System.Text.Json;
 using MediaTrackerAuthenticationService.Data;
 using MediaTrackerAuthenticationService.Services.RequestUrlBuilderService;
 using MediaTrackerAuthenticationService.Services.HttpRequestService;
+using MediaTrackerAuthenticationService.Models.AuthDB;
 
 
 
@@ -156,7 +157,7 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
 
                 var tokenResponse = (await _httpRequestService.GetTokensGoogle(OauthRequestType.Youtube, code)).Data;
 
-
+                Console.WriteLine("ACCESSTOKEN:  " + tokenResponse!.access_token);
                 var exampleDto = new AddPlatformConnectionDto
                 {
                     Platform = MediaPlatform.Youtube, // You should replace this with the appropriate platform

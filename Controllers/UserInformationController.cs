@@ -1,5 +1,6 @@
 using MediaTrackerAuthenticationService.Data;
-using MediaTrackerAuthenticationService.Models;
+using MediaTrackerAuthenticationService.Models.Utils;
+using MediaTrackerAuthenticationService.Models.Redis;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MediaTrackerAuthenticationService.Controllers;

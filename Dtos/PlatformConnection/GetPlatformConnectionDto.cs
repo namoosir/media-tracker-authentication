@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using MediaTrackerAuthenticationService.Models;
+using MediaTrackerAuthenticationService.Models.Utils;
 
 namespace MediaTrackerAuthenticationService.Dtos.PlatformConnection
 {

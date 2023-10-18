@@ -1,4 +1,4 @@
-using MediaTrackerAuthenticationService.Models;
+using MediaTrackerAuthenticationService.Models.AuthDB;
 using Microsoft.EntityFrameworkCore;
 
 namespace MediaTrackerAuthenticationService.Data

@@ -1,4 +1,5 @@
-using MediaTrackerAuthenticationService.Models;
+using MediaTrackerAuthenticationService.Models.Utils;
+using MediaTrackerAuthenticationService.Models.Redis;
 
 namespace MediaTrackerAuthenticationService.Data;
 

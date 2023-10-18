@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace MediaTrackerAuthenticationService.Models
+namespace MediaTrackerAuthenticationService.Models.Utils
 {
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum OauthRequestType

@@ -1,7 +1,7 @@
 using AutoMapper;
 using MediaTrackerAuthenticationService.Dtos.PlatformConnection;
 using MediaTrackerAuthenticationService.Dtos.User;
-using MediaTrackerAuthenticationService.Models;
+using MediaTrackerAuthenticationService.Models.Utils;
 using Microsoft.EntityFrameworkCore;
 using MediaTrackerAuthenticationService.utils;
 using System.Text.Json;
@@ -12,6 +12,7 @@ using MediaTrackerAuthenticationService.Services.HttpRequestService;
 using System.Net.Http.Headers;
 using MediaTrackerAuthenticationService.Controllers;
 using MediaTrackerAuthenticationService.Services.UserService;
+using MediaTrackerAuthenticationService.Models.Redis;
 
 namespace MediaTrackerAuthenticationService.Services.AuthService
 {
@@ -66,7 +67,7 @@ namespace MediaTrackerAuthenticationService.Services.AuthService
                 {
                     //TODO figure out some way to do error state
                     Console.WriteLine("ISSUES" + error);
-                    serviceResponse.Data = "https://google.com" + "?error=" + error;
+                    serviceResponse.Data = "http://localhost:5173/" + "?error=failed";
                     throw new Exception(error);
                 }
 
@@ -86,7 +87,7 @@ namespace MediaTrackerAuthenticationService.Services.AuthService
                 var response = await _userInformationController.GetByUserId(userId);
 
 
-                if (response.Success) sessionToken = response.Data.Token;
+                if (response.Success) sessionToken = response.Data!.Token;
                 else
                 {
                     sessionToken = _sessionTokenService.GenerateToken(userId);
@@ -96,14 +97,7 @@ namespace MediaTrackerAuthenticationService.Services.AuthService
 
                 // _httpContextAccessor.HttpContext.Response.Headers.Add("Authorization", "Bearer " + sessionToken);
 
-                _httpContextAccessor.HttpContext.Response.Cookies.Append("SessionToken", sessionToken, new CookieOptions
-                {
-                    HttpOnly = true, // The cookie is only accessible via HTTP requests
-                    Secure = true, // Ensure that the cookie is only sent over HTTPS
-                    SameSite = SameSiteMode.None, // Adjust this based on your application's requirements
-                });
-
-                serviceResponse.Data = "http://localhost:5173/";
+                serviceResponse.Data = $"http://localhost:5173/?token={sessionToken}";
 
             }
             catch (Exception e)
@@ -123,7 +117,7 @@ namespace MediaTrackerAuthenticationService.Services.AuthService
 
             if (!updateResult.Success)  return ServiceResponse<string>.Build(null, false, "Refresh failed");
 
-            _httpContextAccessor.HttpContext.Response.Headers.Add("Authorization", "Bearer " + newSessionToken);
+            _httpContextAccessor.HttpContext!.Response.Headers.Add("Authorization", "Bearer " + newSessionToken);
             return ServiceResponse<string>.Build("http://localhost:5173/", true, null);
         }
 

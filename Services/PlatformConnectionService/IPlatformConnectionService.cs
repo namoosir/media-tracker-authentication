@@ -1,5 +1,5 @@
 using MediaTrackerAuthenticationService.Dtos.PlatformConnection;
-using MediaTrackerAuthenticationService.Models;
+using MediaTrackerAuthenticationService.Models.Utils;
 
 namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
 {

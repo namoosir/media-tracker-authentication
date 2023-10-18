@@ -1,5 +1,5 @@
 using MediaTrackerAuthenticationService.Dtos.PlatformConnection;
-using MediaTrackerAuthenticationService.Models;
+using MediaTrackerAuthenticationService.Models.Utils;
 using MediaTrackerAuthenticationService.Services.PlatformConnectionService;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http;

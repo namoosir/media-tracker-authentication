@@ -1,7 +1,8 @@
 using AutoMapper;
 using MediaTrackerAuthenticationService.Data;
 using MediaTrackerAuthenticationService.Dtos.User;
-using MediaTrackerAuthenticationService.Models;
+using MediaTrackerAuthenticationService.Models.Utils;
+using MediaTrackerAuthenticationService.Models.AuthDB;
 using Microsoft.EntityFrameworkCore;
 
 namespace MediaTrackerAuthenticationService.Services.UserService;
