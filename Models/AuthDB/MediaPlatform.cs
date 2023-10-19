@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace MediaTrackerAuthenticationService.Models.Utils
+namespace MediaTrackerAuthenticationService.Models.AuthDB
 {
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum MediaPlatform

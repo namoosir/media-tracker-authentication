@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using MediaTrackerAuthenticationService.Models.Utils;
+using MediaTrackerAuthenticationService.Models;
 
 namespace MediaTrackerAuthenticationService.Models.AuthDB
 {

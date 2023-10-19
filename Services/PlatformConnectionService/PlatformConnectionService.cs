@@ -170,7 +170,6 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
                 _context.PlatformConnections.Add(toInsert);
                 await _context.SaveChangesAsync();
 
-
                 //everything succeeded at this point so redirect properly
                 serviceResponse.Data = "http://localhost:5173/";
             }

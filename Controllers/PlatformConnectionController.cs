@@ -29,29 +29,29 @@ public class PlatformConnectionController : ControllerBase
         return Ok(response);
     }
 
-    [HttpPost]
-    public async Task<ActionResult<ServiceResponse<GetPlatformConnectionDto>>> Post(
-        AddPlatformConnectionDto newPlatformConnection
-    )
-    {
-        return Ok(await _platformConnectionService.AddPlatformConnection(newPlatformConnection));
-    }
+    // [HttpPost]
+    // public async Task<ActionResult<ServiceResponse<GetPlatformConnectionDto>>> Post(
+    //     AddPlatformConnectionDto newPlatformConnection
+    // )
+    // {
+    //     return Ok(await _platformConnectionService.AddPlatformConnection(newPlatformConnection));
+    // }
 
-    [HttpPut]
-    public async Task<ActionResult<ServiceResponse<GetPlatformConnectionDto>>> Put(
-        UpdatePlatformConnectionDto updatedPlatformConnection
-    )
-    {
-        var response = await _platformConnectionService.UpdatePlatformConnection(
-            updatedPlatformConnection
-        );
+    // [HttpPut]
+    // public async Task<ActionResult<ServiceResponse<GetPlatformConnectionDto>>> Put(
+    //     UpdatePlatformConnectionDto updatedPlatformConnection
+    // )
+    // {
+    //     var response = await _platformConnectionService.UpdatePlatformConnection(
+    //         updatedPlatformConnection
+    //     );
 
-        if (response.Data is null)
-        {
-            return NotFound(response);
-        }
-        return Ok(response);
-    }
+    //     if (response.Data is null)
+    //     {
+    //         return NotFound(response);
+    //     }
+    //     return Ok(response);
+    // }
 
     [HttpGet("action/request/youtube")]
     public ActionResult<ServiceResponse<string>> GetYoutube()
