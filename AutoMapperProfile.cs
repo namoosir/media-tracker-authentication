@@ -1,6 +1,8 @@
 using AutoMapper;
 using MediaTrackerAuthenticationService.Dtos.PlatformConnection;
-using MediaTrackerAuthenticationService.Models;
+using MediaTrackerAuthenticationService.Dtos.User;
+using MediaTrackerAuthenticationService.Models.AuthDB;
+using MediaTrackerAuthenticationService.Models.Utils;
 
 namespace MediaTrackerAuthenticationService
 {
@@ -10,6 +12,11 @@ namespace MediaTrackerAuthenticationService
         {
             CreateMap<PlatformConnection, GetPlatformConnectionDto>();
             CreateMap<AddPlatformConnectionDto, PlatformConnection>();
+
+            CreateMap<User, GetUserDto>();
+            CreateMap<GetUserDto, User>();
+            CreateMap<AddUserDto, User>();
+            CreateMap<UpsertUserDto, AddUserDto>();
         }
     }
 }

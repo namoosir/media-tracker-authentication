@@ -1,7 +1,7 @@
-using MediaTrackerAuthenticationService.Models;
+using MediaTrackerAuthenticationService.Models.AuthDB;
 using Microsoft.EntityFrameworkCore;
 
-namespace MediaTrackerAuthenticationService
+namespace MediaTrackerAuthenticationService.Data
 {
     public class AppDbContext : DbContext
     {
@@ -9,5 +9,6 @@ namespace MediaTrackerAuthenticationService
             : base(options) { }
 
         public DbSet<PlatformConnection> PlatformConnections => Set<PlatformConnection>();
+        public DbSet<User> Users => Set<User>();
     }
 }

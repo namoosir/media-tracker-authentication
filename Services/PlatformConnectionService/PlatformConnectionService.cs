@@ -1,9 +1,14 @@
 using AutoMapper;
 using MediaTrackerAuthenticationService.Dtos.PlatformConnection;
-using MediaTrackerAuthenticationService.Models;
+using MediaTrackerAuthenticationService.Models.Utils;
 using Microsoft.EntityFrameworkCore;
 using MediaTrackerAuthenticationService.utils;
 using System.Text.Json;
+using MediaTrackerAuthenticationService.Data;
+using MediaTrackerAuthenticationService.Services.RequestUrlBuilderService;
+using MediaTrackerAuthenticationService.Services.HttpRequestService;
+using MediaTrackerAuthenticationService.Models.AuthDB;
+
 
 
 namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
@@ -15,17 +20,24 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
 
+        private readonly IRequestUrlBuilderService _requestUrlBuilderService;
+        private readonly IHttpRequestService _httpRequestService;
+
         public PlatformConnectionService(
             IMapper mapper,
             AppDbContext context,
             HttpClient httpClient,
-            IConfiguration configuration
+            IConfiguration configuration,
+            IRequestUrlBuilderService requestUrlBuilderService,
+            IHttpRequestService httpRequestService
         )
         {
             _mapper = mapper;
             _context = context;
             _httpClient = httpClient;
             _configuration = configuration;
+            _requestUrlBuilderService = requestUrlBuilderService;
+            _httpRequestService = httpRequestService;
         }
 
         public async Task<ServiceResponse<GetPlatformConnectionDto>> AddPlatformConnection(
@@ -37,6 +49,8 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
             try
             {
                 var toInsert = _mapper.Map<PlatformConnection>(newPlatformConnection);
+                Console.WriteLine($"Authorization Code: {toInsert.UserId}");
+
                 _context.PlatformConnections.Add(toInsert);
                 await _context.SaveChangesAsync();
                 serviceResponse.Data = _mapper.Map<GetPlatformConnectionDto>(toInsert);
@@ -115,11 +129,9 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
         public ServiceResponse<string> GetYoutube()
         {
             var serviceResponse = new ServiceResponse<string>();
-            var url = new RedirectAuth(_configuration).CreateUrl(
-                "https://www.googleapis.com/auth/youtube.readonly"
-            );
+            var url = _requestUrlBuilderService.BuildGoogleAuthRequest(OauthRequestType.Youtube);
 
-            serviceResponse.Data = url;
+            serviceResponse.Data = url.Data;
             return serviceResponse;
         }
 
@@ -141,66 +153,25 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
 
                 Console.WriteLine($"Authorization Code: {code}");
 
-                TokenRequestParameters requestParams = new TokenRequestParameters(
-                    _configuration,
-                    code
-                );
-
-                var dict = requestParams.parametersToDictionary();
-                var content = new FormUrlEncodedContent(dict);
-
-                var response = await _httpClient.PostAsync(requestParams.tokenEndpoint, content);
-
-                Console.WriteLine("HTTP Response:");
-                Console.WriteLine($"Status Code: {response.StatusCode}");
-                Console.WriteLine($"Headers: {response.Headers}");
-                Console.WriteLine($"Content: {await response.Content.ReadAsStringAsync()}");
-
-                var responseContent = await response.Content.ReadAsStringAsync();
-                Console.WriteLine(responseContent);
 
 
-                if (response.IsSuccessStatusCode)
+                var tokenResponse = (await _httpRequestService.GetTokensGoogle(OauthRequestType.Youtube, code)).Data;
+
+                Console.WriteLine("ACCESSTOKEN:  " + tokenResponse!.access_token);
+                var exampleDto = new AddPlatformConnectionDto
                 {
+                    Platform = MediaPlatform.Youtube, // You should replace this with the appropriate platform
+                    AccessToken = tokenResponse.access_token,
+                    RefreshToken = tokenResponse.refresh_token,
+                    Scopes = tokenResponse.scope // Replace with the required scopes
+                };
 
-                    var tokenResponse = JsonSerializer.Deserialize<TokenResponse>(responseContent);
-                    var exampleDto = new AddPlatformConnectionDto
-                    {
-                        Platform = MediaPlatform.Youtube, // You should replace this with the appropriate platform
-                        AccessToken = tokenResponse.access_token,
-                        RefreshToken = tokenResponse.refresh_token,
-                        Scopes = tokenResponse.scope // Replace with the required scopes
-                    };
-
-                    var toInsert = _mapper.Map<PlatformConnection>(exampleDto);
-                    _context.PlatformConnections.Add(toInsert);
-                    await _context.SaveChangesAsync();
-
-                    // Parse the JSON response to obtain the tokens
-                    // var tokenResponse = await response.Content.ReadAsAsync<TokenResponse>();
-
-                    //             // Log the token response to the console
-                    // Console.WriteLine("Token Response:");
-                    // Console.WriteLine($"Access Token: {tokenResponse.access_token}");
-                    // Console.WriteLine($"Token Type: {tokenResponse.token_type}");
-                    // Console.WriteLine($"Expires In: {tokenResponse.expires_in}");
-                    // Console.WriteLine($"Refresh Token: {tokenResponse.refresh_token}");
-                    // Console.WriteLine($"Scope: {tokenResponse.scope}");
-                    // Console.WriteLine($"ID Token: {tokenResponse.id_token}");
-
-                    // return tokenResponse;
-                }
-                else
-                {
-                    // Handle the error response
-                    // You may want to log the error and take appropriate action
-                    throw new Exception(
-                        $"Token exchange failed with status code {response.StatusCode}"
-                    );
-                }
+                var toInsert = _mapper.Map<PlatformConnection>(exampleDto);
+                _context.PlatformConnections.Add(toInsert);
+                await _context.SaveChangesAsync();
 
                 //everything succeeded at this point so redirect properly
-                serviceResponse.Data = "https://google.com";
+                serviceResponse.Data = "http://localhost:5173/";
             }
             catch (Exception e)
             {

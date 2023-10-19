@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
+using MediaTrackerAuthenticationService.Models;
 
-namespace MediaTrackerAuthenticationService.Models
+namespace MediaTrackerAuthenticationService.Models.AuthDB
 {
     public class PlatformConnection
     {
