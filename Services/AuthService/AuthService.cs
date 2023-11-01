@@ -73,7 +73,7 @@ namespace MediaTrackerAuthenticationService.Services.AuthService
                     //TODO figure out some way to do error state
                     Console.WriteLine("ISSUES" + error);
                     serviceResponse.Data = "http://localhost:5173/" + "?error=failed";
-                    throw new Exception("");
+                    throw new Exception(error);
                 }
 
                 if (string.IsNullOrEmpty(state) || state != _configuration["GoogleOauth:State"]){
