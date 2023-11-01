@@ -67,8 +67,9 @@ public class PlatformConnectionController : ControllerBase
     {
         string? code = queryParameters.TryGetValue("code", out string? result) ? result : null;
         string? error = queryParameters.TryGetValue("error", out string? result2) ? result2 : null;
+        string? state = queryParameters.TryGetValue("error", out string? result3) ? result3 : null;
 
-        var response = await _platformConnectionService.GetRedirectYoutube(code, error);
+        var response = await _platformConnectionService.GetRedirectYoutube(code, error, state);
 
         Console.WriteLine(response.Message);
 

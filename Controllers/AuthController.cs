@@ -46,8 +46,9 @@ public class Auth : ControllerBase
     {
         string? code = queryParameters.TryGetValue("code", out string? result) ? result : null;
         string? error = queryParameters.TryGetValue("error", out string? result2) ? result2 : null;
+        string? state = queryParameters.TryGetValue("error", out string? result3) ? result3 : null;
 
-        var response = await _authService.GetRedirectGoogle(code, error);
+        var response = await _authService.GetRedirectGoogle(code, error, state);
 
         Console.WriteLine(response.Message);
 
