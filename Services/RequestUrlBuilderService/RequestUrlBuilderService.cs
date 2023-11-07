@@ -23,6 +23,7 @@ namespace MediaTrackerAuthenticationService.Services.RequestUrlBuilderService
             string endpoint = _configuration["GoogleOauth:Endpoint:Auth"];
             string clientId = _configuration["GoogleOauth:ClientId"];
             string siteDomain = _configuration["Site:Domain"];
+            string stateSecret = _configuration["GoogleOauth:State"];
             string responseType = "code";
             string accessType = "offline";
             string prompt = "consent";
@@ -48,7 +49,8 @@ namespace MediaTrackerAuthenticationService.Services.RequestUrlBuilderService
                 + $"&scope={scope}"
                 + $"&response_type={responseType}"
                 + $"&access_type={accessType}"
-                + $"&prompt={prompt}";
+                + $"&prompt={prompt}"
+                + $"&state={stateSecret}";
 
             serviceResponse.Data = oauthUrl;
             return serviceResponse;

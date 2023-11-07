@@ -29,6 +29,8 @@ namespace MediaTrackerAuthenticationService.Services.AuthService
         private readonly AppDbContext _dbContext;
         private readonly IMapper _mapper;
 
+        private readonly IConfiguration _configuration;
+
         public AuthService(
             IRequestUrlBuilderService requestUrlBuilderService,
             ISessionTokenService sessionTokenService,
@@ -38,7 +40,8 @@ namespace MediaTrackerAuthenticationService.Services.AuthService
             HttpClient httpClient,
             IHttpContextAccessor httpContextAccessor,
             AppDbContext appDbContext,
-            IMapper mapper
+            IMapper mapper,
+            IConfiguration configuration
         )
         {
             _requestUrlBuilderService = requestUrlBuilderService;
@@ -50,6 +53,7 @@ namespace MediaTrackerAuthenticationService.Services.AuthService
             _httpContextAccessor = httpContextAccessor;
             _dbContext = appDbContext;
             _mapper = mapper;
+            _configuration = configuration;
         }
 
         public ServiceResponse<string> GetGoogle()
@@ -58,7 +62,7 @@ namespace MediaTrackerAuthenticationService.Services.AuthService
             return url;
         }
 
-        public async Task<ServiceResponse<string>> GetRedirectGoogle(string? code, string? error)
+        public async Task<ServiceResponse<string>> GetRedirectGoogle(string? code, string? error, string? state)
         {
             var serviceResponse = new ServiceResponse<string>();
 
@@ -70,6 +74,11 @@ namespace MediaTrackerAuthenticationService.Services.AuthService
                     Console.WriteLine("ISSUES" + error);
                     serviceResponse.Data = "http://localhost:5173/" + "?error=failed";
                     throw new Exception(error);
+                }
+
+                if (string.IsNullOrEmpty(state) || state != _configuration["GoogleOauth:State"]){
+                    // Someone not Google has called this endpoint, They are not authorized
+                    throw new Exception("UnAuthorized call for this endpoint");
                 }
 
                 string accessToken = (await _httpRequestService.GetTokensGoogle(OauthRequestType.GoogleLogin, code)).Data!.access_token;

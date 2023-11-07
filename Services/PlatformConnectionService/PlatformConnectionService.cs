@@ -135,7 +135,7 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<string>> GetRedirectYoutube(string? code, string? error)
+        public async Task<ServiceResponse<string>> GetRedirectYoutube(string? code, string? error, string? state)
         {
             var serviceResponse = new ServiceResponse<string>();
 
@@ -145,11 +145,15 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
                 {
                     //figure out some way to do error state
                     Console.WriteLine("ISSUES" + error);
-
                     serviceResponse.Data = "https://google.com" + "?error=" + error;
-
                     throw new Exception(error);
                 }
+
+                if (string.IsNullOrEmpty(state) || state != _configuration["GoogleOauth:State"]){
+                    // Someone not Google has called this endpoint, They are not authorized
+                    throw new Exception("UnAuthorized call for this endpoint");
+                }
+
 
                 Console.WriteLine($"Authorization Code: {code}");
 
