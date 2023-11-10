@@ -21,12 +21,16 @@ public class PlatformConnectionController : ControllerBase
     public async Task<ActionResult<ServiceResponse<GetPlatformConnectionDto>>> Get(int userId)
     {
         var response = await _platformConnectionService.GetPlatformConnectionByUserId(userId);
-
+        
         if (response.Data is null)
         {
             return NotFound(response);
         }
-        return Ok(response);
+
+        //call function
+        var validResponse = await _platformConnectionService.YoutubeGetValidPlatformConnection(response.Data);
+
+        return Ok(validResponse);
     }
 
     // [HttpPost]

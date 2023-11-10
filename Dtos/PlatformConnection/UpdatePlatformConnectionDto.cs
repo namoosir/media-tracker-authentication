@@ -15,5 +15,6 @@ namespace MediaTrackerAuthenticationService.Dtos.PlatformConnection
         public required string RefreshToken { get; set; }
 
         public required string Scopes { get; set; }
+        public DateTime UpdatedAt { get; set; }
     }
 }
