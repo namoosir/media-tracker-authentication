@@ -49,9 +49,10 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
             try
             {
                 var toInsert = _mapper.Map<PlatformConnection>(newPlatformConnection);
-                Console.WriteLine($"Authorization Code: {toInsert.UserId}");
+                Console.WriteLine($"Authorization Codee: {toInsert.UserId}");
 
                 _context.PlatformConnections.Add(toInsert);
+                
                 await _context.SaveChangesAsync();
                 serviceResponse.Data = _mapper.Map<GetPlatformConnectionDto>(toInsert);
             }
@@ -157,8 +158,6 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
 
                 Console.WriteLine($"Authorization Code: {code}");
 
-
-
                 var tokenResponse = (await _httpRequestService.GetTokensGoogle(OauthRequestType.Youtube, code)).Data;
 
                 Console.WriteLine("ACCESSTOKEN:  " + tokenResponse!.access_token);
@@ -186,6 +185,41 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
             // You can also use 'state' for additional validation or context if needed.
 
             // No content is returned to the client.
+            return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<GetPlatformConnectionDto>> YoutubeGetValidPlatformConnection(GetPlatformConnectionDto platformConnection)
+        {
+            var serviceResponse = new ServiceResponse<GetPlatformConnectionDto>();
+
+            const int TOKEN_EXPIRY_MINUTES = 59;
+
+            try 
+            {
+                if ((DateTime.Now - platformConnection.UpdatedAt).TotalMinutes >= TOKEN_EXPIRY_MINUTES)
+                {
+                    var refreshedTokens = await _httpRequestService.YoutubeGetRefreshedTokens(platformConnection.RefreshToken);
+                    if (!refreshedTokens.Success) throw new Exception("Failed to Refresh Access Token");
+
+                    platformConnection.AccessToken = refreshedTokens.Data.access_token;
+                    platformConnection.RefreshToken = refreshedTokens.Data.refresh_token ?? platformConnection.RefreshToken;
+
+                    var toUpdate = _mapper.Map<UpdatePlatformConnectionDto>(platformConnection);
+                    var updated = await UpdatePlatformConnection(toUpdate);
+
+                    serviceResponse = updated;
+                }
+                else 
+                {
+                    serviceResponse.Data = platformConnection;
+                }
+            }
+            catch (Exception e)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = e.Message;
+            }
+
             return serviceResponse;
         }
     }

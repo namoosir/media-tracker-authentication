@@ -10,6 +10,10 @@ namespace MediaTrackerAuthenticationService.Services.RequestUrlBuilderService
             string code
         );
 
+        ServiceResponse<(string endpoint, HttpContent body)> BuildGoogleRefreshTokensReqest(
+            string refresh_token
+        );
+
         ServiceResponse<string> BuildGoogleUserInfoRequest();
     }
 }
