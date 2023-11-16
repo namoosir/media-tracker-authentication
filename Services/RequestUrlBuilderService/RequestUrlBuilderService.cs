@@ -90,6 +90,27 @@ namespace MediaTrackerAuthenticationService.Services.RequestUrlBuilderService
             return serviceResponse;
         }
 
+        public ServiceResponse<(string endpoint, HttpContent body)> BuildGoogleRefreshTokensReqest(
+            string refresh_token
+        )
+        {
+            string endpoint = _configuration["GoogleOauth:Endpoint:Token"];
+            string clientId = _configuration["GoogleOauth:ClientId"];
+            string clientSecret = _configuration["GoogleOauth:ClientSecret"];
+            string grant_type = "refresh_token";
+
+            var parameters = new Dictionary<string, string>
+            {
+                { "client_id", clientId },
+                { "client_secret", clientSecret },
+                { "refresh_token", refresh_token },
+                { "grant_type", grant_type }
+            };
+
+            var body = new FormUrlEncodedContent(parameters);
+            return ServiceResponse<(string, HttpContent)>.Build((endpoint, body), true, null);
+        }
+
         public ServiceResponse<string> BuildGoogleUserInfoRequest()
         {
             var serviceResponse = new ServiceResponse<string>();

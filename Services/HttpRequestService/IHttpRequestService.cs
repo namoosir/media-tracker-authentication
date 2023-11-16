@@ -7,5 +7,6 @@ namespace MediaTrackerAuthenticationService.Services.HttpRequestService
     {
         Task<ServiceResponse<TokenResponse>> GetTokensGoogle(OauthRequestType requestType, string code);
         Task<ServiceResponse<UserInfoResponse>> GetUserInfoGoogle(string accessToken);
+        Task<ServiceResponse<TokenResponse>> YoutubeGetRefreshedTokens(string refreshToken);
     }
 }

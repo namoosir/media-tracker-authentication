@@ -58,5 +58,22 @@ public class HttpRequestService : IHttpRequestService
             throw new HttpRequestException($"Error calling userinfo endpoint: {response.StatusCode}");
         }
     }
+
+    public async Task<ServiceResponse<TokenResponse>> YoutubeGetRefreshedTokens(string refreshToken)
+    {
+        var request = _requestUrlBuilderService.BuildGoogleRefreshTokensReqest(refreshToken);
+        var response = await _httpClient.PostAsync(
+            request.Data.endpoint,
+            request.Data.body
+        );
+        var responseContentString = await response.Content.ReadAsStringAsync();
+        Console.WriteLine(responseContentString);
+        if (response.IsSuccessStatusCode) {
+            var deserialzedContent = JsonSerializer.Deserialize<TokenResponse>(responseContentString);
+            return ServiceResponse<TokenResponse>.Build(deserialzedContent, true, null);
+        } else {
+            throw new Exception($"Token refresh failed with status code {response.StatusCode}");
+        }
+    }
 }
 

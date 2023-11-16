@@ -1,4 +1,5 @@
 using MediaTrackerAuthenticationService.Dtos.PlatformConnection;
+using MediaTrackerAuthenticationService.Models.AuthDB;
 using MediaTrackerAuthenticationService.Models.Utils;
 
 namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
@@ -14,5 +15,8 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
         );
         ServiceResponse<string> GetYoutube();
         Task<ServiceResponse<string>> GetRedirectYoutube(string? code, string? error, string? state);
+        Task<ServiceResponse<GetPlatformConnectionDto>> YoutubeGetValidPlatformConnection(GetPlatformConnectionDto platformConnection);
+
+        
     }
 }
