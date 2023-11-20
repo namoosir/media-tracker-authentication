@@ -67,7 +67,6 @@ public class HttpRequestService : IHttpRequestService
             request.Data.body
         );
         var responseContentString = await response.Content.ReadAsStringAsync();
-        Console.WriteLine(responseContentString);
         if (response.IsSuccessStatusCode) {
             var deserialzedContent = JsonSerializer.Deserialize<TokenResponse>(responseContentString);
             return ServiceResponse<TokenResponse>.Build(deserialzedContent, true, null);

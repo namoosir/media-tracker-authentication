@@ -70,7 +70,7 @@ namespace MediaTrackerAuthenticationService.Services.AuthService
             {
                 if (string.IsNullOrEmpty(code))
                 {
-                    //TODO figure out some way to do error state
+                    //TODO: figure out some way to do error state
                     Console.WriteLine("ISSUES" + error);
                     serviceResponse.Data = "http://localhost:5173/" + "?error=failed";
                     throw new Exception(error);
