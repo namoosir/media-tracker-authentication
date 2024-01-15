@@ -17,7 +17,7 @@ public class SessionTokenService : ISessionTokenService
 
     public string GenerateToken(int userId)
     {
-        var secret = _configuration["ServiceSecret"];
+        var secret = _configuration["JwtSessionSecretSigningKey"];
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
