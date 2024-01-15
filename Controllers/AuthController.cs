@@ -67,6 +67,12 @@ public class Auth : ControllerBase
         return Ok(response);
     }
 
+    [HttpGet("whoami/{userId}")]
+    public ActionResult<ServiceResponse<int>> Whoami(int userId)
+    {
+        return Ok(ServiceResponse<int>.Build(userId));
+    }
+
     [HttpGet("logout/{userId}")]
     public async Task<ActionResult> Logout(int userId)
     {

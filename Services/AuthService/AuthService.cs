@@ -107,7 +107,7 @@ namespace MediaTrackerAuthenticationService.Services.AuthService
 
                 // _httpContextAccessor.HttpContext.Response.Headers.Add("Authorization", "Bearer " + sessionToken);
 
-                serviceResponse.Data = $"http://localhost:5173/?token={sessionToken}";
+                serviceResponse.Data = $"http://localhost:5173/oauthHandleRedirect?token={sessionToken}";
 
             }
             catch (Exception e)

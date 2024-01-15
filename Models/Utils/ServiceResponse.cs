@@ -6,7 +6,7 @@ namespace MediaTrackerAuthenticationService.Models.Utils
         public bool Success { get; set; } = true;
         public string Message { get; set; } = string.Empty;
 
-        public static ServiceResponse<T> Build(T? data, bool? success, string? message)
+        public static ServiceResponse<T> Build(T? data, bool? success = true, string? message = null)
         {
             var serviceResponse = new ServiceResponse<T>
             {
