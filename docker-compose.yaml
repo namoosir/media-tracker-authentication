@@ -8,3 +8,15 @@ services:
         ports:
             - "1433:1433"
 
+    server:
+        build:
+            context: ./
+            dockerfile: Dockerfile
+        volumes:
+            - ./:/app
+        ports:
+            - "5238:5238"
+        depends_on:
+            - auth-db
+        network-mode:
+            - host
