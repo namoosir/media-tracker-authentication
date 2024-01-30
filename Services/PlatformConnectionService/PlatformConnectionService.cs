@@ -174,7 +174,7 @@ namespace MediaTrackerAuthenticationService.Services.PlatformConnectionService
                 await _context.SaveChangesAsync();
 
                 //everything succeeded at this point so redirect properly
-                serviceResponse.Data = "http://localhost:5173/";
+                serviceResponse.Data = $"http://localhost:5173/oauthHandleRedirect?platformConnection=youtube";
             }
             catch (Exception e)
             {

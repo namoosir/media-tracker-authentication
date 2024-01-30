@@ -9,4 +9,6 @@ public interface IUserInformationRepository
     Task<UserInformation?> GetUserInformationByUserId(int userId);
     Task<bool> DeleteUserInformationByUserId(int userId);
     Task<bool> UpdateUserInformation(UserInformation newUserInformation);
+
+    Task<bool> UpsertUserInformation(UserInformation newUserInformation);
 }

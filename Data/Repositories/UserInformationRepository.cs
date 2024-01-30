@@ -51,4 +51,18 @@ public class UserInformationRepository : IUserInformationRepository
         var serialUserInformation = JsonSerializer.Serialize(newUserInformation);
         return await db.StringSetAsync($"UserInformation:{newUserInformation.UserId}", serialUserInformation);
     }
+
+    public async Task<bool> UpsertUserInformation(UserInformation newUserInformation)
+    {
+        var exisiting = await GetUserInformationByUserId(newUserInformation.UserId);
+        if (exisiting is null)
+        {
+            return await CreateUserInformation(newUserInformation);
+        }
+
+        var db = _redis.GetDatabase();
+
+        var serialUserInformation = JsonSerializer.Serialize(newUserInformation);
+        return await db.StringSetAsync($"UserInformation:{newUserInformation.UserId}", serialUserInformation);
+    }
 }

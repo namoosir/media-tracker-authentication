@@ -73,4 +73,19 @@ public class UserInformationController
         }
         return serviceResponse;
     }
+
+    public async Task<ServiceResponse<bool>> UpsertUserInformation(UserInformation newUserInformation)
+    {
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = await _userInformationRepository.UpsertUserInformation(newUserInformation)
+        };
+
+        if (!serviceResponse.Data)
+        {
+            serviceResponse.Success = false;
+            serviceResponse.Message = "Failed to update user";
+        }
+        return serviceResponse;
+    }
 }

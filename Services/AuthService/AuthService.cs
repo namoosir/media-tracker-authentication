@@ -97,13 +97,10 @@ namespace MediaTrackerAuthenticationService.Services.AuthService
                 var response = await _userInformationController.GetByUserId(userId);
 
 
-                if (response.Success) sessionToken = response.Data!.Token;
-                else
-                {
-                    sessionToken = _sessionTokenService.GenerateToken(userId);
-                    var createdResult = await _userInformationController.CreateUserInformation(UserInformation.Build(sessionToken, userId));
-                    if (!createdResult.Success) throw new Exception(createdResult.Message);
-                }
+
+                sessionToken = _sessionTokenService.GenerateToken(userId);
+                var createdResult = await _userInformationController.UpsertUserInformation(UserInformation.Build(sessionToken, userId));
+                if (!createdResult.Success) throw new Exception(createdResult.Message);
 
                 // _httpContextAccessor.HttpContext.Response.Headers.Add("Authorization", "Bearer " + sessionToken);
 
